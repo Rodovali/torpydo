@@ -37,11 +37,13 @@ through the chosen nodes. To do so, it contacts the first node, exchanges a
 shared key and communicates the address of the second node. It then do the same
 with the second node through the first one. The process is repeated until the
 final destination is reached by the last node.
+
 At each step, a encryption level is added. The client encrypts the data it want
 to send with the keys of the intermediate nodes. When data is forwarded by a
 node it is first decrypted one time with the key of the node.
+
 When data is sent back by the final destination, the data is encrypted one time
-at with the nodes keys at each forwarding step.
+with the nodes keys at each forwarding step.
 As the client is the only entity in the chain to have all the keys, it is also
 the only one able to decrypt the data completely at the end of the chain.
 
