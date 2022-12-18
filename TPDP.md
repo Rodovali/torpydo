@@ -105,6 +105,7 @@ For a client, the handshake protocol is:
 - The Hello message should be `Hello TPDP/0.1\r\n`.
 - ACK corresponds to a `\x06\x06` (two Acknowledge characters).
 - ETB corresponds to a `\x17\x17` (two End of Transmission Block characters).
+
 Any difference with these messages will result to a `PROTOCOL_ERROR` followed
 by an immediate disconnection.
 
