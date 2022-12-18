@@ -10,16 +10,16 @@ Bao HAN.
 Torpydo is a stream based peer-to-peer decentralized onion routing platform 
 written in Python. Its goal is to anonymize end-to-end TCP connections, relying 
 on multiple encryptions of the TCP stream segments (like an onion) and on a 
-particular peer-to-peer architecture where nodes don't know anything about the
+particular peer-to-peer architecture where nodes do not know anything about the
 nature of their source and destination and about the data segments they are 
 forwarding.
 
-Anonymity is further guaranteed thanks to the stream ciphers used. 
-Disabling nodes to know their role in the chain (no un-padding).
+Anonymity is further guaranteed thanks to the stream ciphers used, 
+rendering nodes unable to know their role in the chain (no un-padding).
 
 TorPyDo Protocol or TPDP is the protocol on which Torpydo is built.
 
-In this specification we will use the following denominations:
+In this specification we will use the following designations:
 - **Node** - A server hosting a TPDP service.
 - **Client** - A client sending data through a TPDP interface.
 - **Final Destination** - The destination the client wants to reach anonymously
@@ -30,26 +30,26 @@ another node).
 destination or another node).
 
 ## Working Principle
-A torpydo network is constituted of a certain number of independant nodes.
-When a client wants to reach anonymously a final destination, it first choose
+A torpydo network is composed of a certain number of independant nodes.
+When a client wants to reach anonymously a final destination, it first chooses
 a set of nodes. It then constructs a path from itself to its final destination
 through the chosen nodes. To do so, it contacts the first node, exchanges a
-shared key and communicates the address of the second node. It then do the same
-with the second node through the first one. The process is repeated until the
+shared key with it and then tells it the address of the second node. It then repeats the same
+procedure with the second node through the first one. The process is repeated until the
 final destination is reached by the last node.
 
-At each step, a encryption level is added. The client encrypts the data it want
+At each step, an encryption level is added. The client encrypts the data that it wants
 to send with the keys of the intermediate nodes. When data is forwarded by a
-node it is first decrypted one time with the key of the node.
+node, it is first decrypted one time with the key of the node.
 
-When data is sent back by the final destination, the data is encrypted one time
+When data is sent back from the final destination, the data is encrypted one time
 with the nodes keys at each forwarding step.
-As the client is the only entity in the chain to have all the keys, it is also
+As the client is the only entity in the chain that has all the keys, it is also
 the only one able to decrypt the data completely at the end of the chain.
 
 The chain lasts until the client or the final destination cuts the TCP 
 connection. This results to the total destruction of the chain (all the TCP
-connections are closed). This can also happen if an intermediate node cut the
+connections are closed). This can also happen if an intermediate node cuts the
 connection for a reason or another.
 
 ## TPDP Session
@@ -58,13 +58,13 @@ A TPDP session is divided in two phases:
 - Data forwarding
 
 During **handshake**, the client and the node will exchange a shared key, to 
-encrypt and decrypt data. Then the client communicates to the node its 
-destination host name and port, on which the node tries to connect. If the 
-connection is successful, the session enter the data forwarding phase.
+encrypt and decrypt data. Then the client communicates with the node its 
+destination hostname and port, to which the node tries to connect. If the 
+connection is successful, the session enters the data forwarding phase.
 
 During the **data forwarding** phase, every data segment received from the 
-source are decrypted and forwarded to the destination. Similarly, every data 
-segment received from the destination are encrypted and forwarded to the source.
+source is decrypted and forwarded to the destination. Similarly, every data 
+segment received from the destination is encrypted and forwarded to the source.
 
 ### Handshake
 For a node, the handshake protocol is:
@@ -108,23 +108,24 @@ For a client, the handshake protocol is:
 - ACK corresponds to a `\x06\x06` (two Acknowledge characters).
 - ETB corresponds to a `\x17\x17` (two End of Transmission Block characters).
 
-Any difference with these messages will result to a `PROTOCOL_ERROR` followed
+Any difference with these messages will result in a `PROTOCOL_ERROR` followed
 by an immediate disconnection.
 
 Additionally a timeout (10s by default) can be set by the node administrator.
 If the node awaits for a client response during the handshake for more than the
-timeout, it will result to a `TIMEOUT_ERROR` followed by an immediate
+timeout, it will result in a `TIMEOUT_ERROR` followed by an immediate
 disconnection.
 
 ### Data Forwarding
 For a node, data forwarding is made in two asynchronous pocesses:
-Forward source data to destination:
+
+1. Forward source data to destination:
 ```
 <- Await source peer data segment
 -- Decrypt data
 -> Forward decrypted data segment to destination peer
 ```
-Forward destination data to source:
+2. Forward destination data to source:
 ```
 <- Await destination peer answer data
 -- Encrypt answer data
@@ -132,12 +133,13 @@ Forward destination data to source:
 ```
 
 For a client:
-Send data to final destination:
+
+1. Send data to final destination:
 ```
 -- Encrypt data with all the nodes keys (in order from last key to first key)
 -> Send data to first node
 ```
-Receive data from final destination:
+2. Receive data from final destination:
 ```
 <- Receive data from the first node
 -- Decrypt data with all the nodes keys (in order from first key to last key)
@@ -151,12 +153,12 @@ another.
 Errors can happen during the handshake phase. Here is a list of all the
 possible errors, with their code and their signification:
 - `TIMEOUT_ERROR`: 0 - Client took too much time to do a handshake step.
-- `PROTOCOL_ERROR`: 1 - Node or Client did not respected the protocol.
-- `DESTINATION_CONNECTION_ERROR`: 2 - Node was not able to connect with the
+- `PROTOCOL_ERROR`: 1 - Node or Client did not respect the protocol.
+- `DESTINATION_CONNECTION_ERROR`: 2 - Node was not able to connect to the
 destination.
 
-When an error is throwed by a node, it sends a byte corresponding to the error
-code to the client, and immediately cut the connection. Hence the client can
+When an error is thrown by a node, it sends a byte corresponding to the error
+code to the client, and immediately cuts the connection. Hence the client can
 get the error code by looking at the last byte of the stream.
-When an error is throwed by a client, it cuts the connection and raises an 
+When an error is thrown by a client, it cuts the connection and raises an 
 exception.
