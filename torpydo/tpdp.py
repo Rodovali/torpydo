@@ -70,7 +70,7 @@ class TPDPService:
         self._handshaked = False
 
         # (private) Log flag
-        self._loging = False
+        self._logging = False
 
         # (private) Connection closed flag
         self._closed = False
@@ -253,7 +253,7 @@ class TPDPService:
         Arguments:
         flag -- Log toggle.
         """
-        self._loging = flag
+        self._logging = flag
     
 
     # -- Private methods --
@@ -265,7 +265,7 @@ class TPDPService:
         type    -- Type of log (STATUS, INFO or ERROR).
         message -- Message to log.
         """
-        if not self._loging:
+        if not self._logging:
             return
         
         source_host, source_port = self._source_writer.get_extra_info("peername")

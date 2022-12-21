@@ -83,8 +83,8 @@ class PoolIndex:
         # (private) Garbage collector cycle (in s)
         self._garbage_collector_cycle = 10.0
 
-        # (private) Loging flag
-        self._loging = False
+        # (private) Logging flag
+        self._logging = False
 
     
     # -- Public methods --
@@ -104,9 +104,9 @@ class PoolIndex:
         Set whenever the pool index server should log information to console.
 
         Arguments:
-        flag -- Loging toggle.
+        flag -- Logging toggle.
         """
-        self._loging = flag
+        self._logging = flag
 
 
     def set_requested_delay(self, delay: int) -> None:
@@ -218,11 +218,11 @@ class PoolIndex:
 
     def _log(self, type: PoolIndexLogType, message: str) -> None:
         """
-        Log a message to the console if loging flag is set.
+        Log a message to the console if logging flag is set.
 
         Arguments:
         type    -- Type of log.
         message -- Message to log.
         """
-        if self._loging:
+        if self._logging:
             print(f"[Torpydo Pool Index]<{type.name}> - {message}")

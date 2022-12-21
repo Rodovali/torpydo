@@ -47,8 +47,8 @@ class Node:
         # (private) Pool index server port
         self._pool_index_port = None
 
-        # (private) Loging flag
-        self._loging = False
+        # (private) Logging flag
+        self._logging = False
 
 
     # -- Public methods --    
@@ -81,21 +81,21 @@ class Node:
         Set whenever the node should log information to the console.
 
         Arguments:
-        flag -- Loging toggle.
+        flag -- Logging toggle.
         """
-        self._loging = flag
+        self._logging = flag
 
 
     # -- Private methods --
     def _log(self, type: NodeLogType, message: str) -> None:
         """
-        Log a message to the console if loging flag is set.
+        Log a message to the console if logging flag is set.
 
         Arguments:
         type    -- Type of log.
         message -- Message to log.
         """
-        if self._loging:
+        if self._logging:
             print(f"[Torpydo Node]<{type.name}> - {message}")
 
 
@@ -112,8 +112,8 @@ class Node:
         # Create an instance of TPDP service
         tpdp_handler = TPDPService(source_reader, source_writer)
         
-        # Activate loging depending on loging flag of the node
-        tpdp_handler.set_log(self._loging)
+        # Activate logging depending on logging flag of the node
+        tpdp_handler.set_log(self._logging)
 
         host, port = source_writer.get_extra_info("peername")
         self._log(NodeLogType.INFO, f"New connection from {host}:{port}.")
