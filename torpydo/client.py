@@ -11,7 +11,7 @@
 import asyncio
 
 # TPDP Client
-from tpdp import TPDPClient
+from torpydo.tpdp import TPDPClient
 
 # Cryptographically strong randomness
 from secrets import SystemRandom

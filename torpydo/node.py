@@ -14,7 +14,7 @@ import asyncio
 from enum import Enum
 
 # TPDP handler
-from tpdp import TPDPService
+from torpydo.tpdp import TPDPService
 
 
 # === Enums ===
