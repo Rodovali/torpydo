@@ -50,6 +50,11 @@ $ pip uninstall torpydo
 ## ⚡ Quick start
 This section gives examples of minimal code to use the three torpydo entities.
 
+You can also directly execute the example codes in the `examples` directory,
+in which there are pre-configured pool index and node in addition to a simple
+http proxy redirecting http requests to their recipient server through a torpydo
+network. 
+
 For more details, feel free to consult the documentation section below.
 
 ### Using the torpydo client lib
