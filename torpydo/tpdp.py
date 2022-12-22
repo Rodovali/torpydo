@@ -392,7 +392,7 @@ class TPDPService:
         error -- Error to send to source.
         """
         await self._write_to_source(error.value.to_bytes(1))
-        self._log(TPDPLogType.ERROR, f"Error send to source: {error.name}")
+        self._log(TPDPLogType.ERROR, f"Error sent to source: {error.name}")
 
 
     async def _write_to_destination(self, data: bytes) -> None:
