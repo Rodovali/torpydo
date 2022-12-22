@@ -21,9 +21,14 @@ from secrets import SystemRandom
 # - Client -
 class Client():
     def __init__(self) -> None:
+        """
+        Instanciate a new torpydo client
+        """
         self._tpdp_handler = None
         self._node_infos = {}
 
+        self._node_reader = None
+        self._node_writer = None
 
     async def connect(self, host: str, port: int) -> None:
         """
@@ -33,8 +38,17 @@ class Client():
         host -- Hostname of the node destination.
         port -- TCP Port of the node destination.
         """
-        node_reader, node_writer = await asyncio.open_connection(host, port)
-        self._tpdp_handler = TPDPClient(node_reader, node_writer)
+        self._node_node_reader, self._node_node_writer = await asyncio.open_connection(host, port)
+        self._tpdp_handler = TPDPClient(self._node_node_reader, self._node_node_writer)
+    
+    
+    async def close(self) -> None:
+        """
+        Closes the connection with the first node, and hence, with the destination
+        by breaking all the chain.
+        """
+        self._node_writer.close()
+        await self._node_writer.wait_closed()
 
 
     async def next_destination(self, host: str, port: int) -> None:
