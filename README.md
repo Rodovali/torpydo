@@ -201,9 +201,20 @@ async send(data: bytes) -> None
 Sends data to the last destination.
 
 ```py
+async close() -> None
+```
+Close TCP connection with first node, breaking all the chain.
+
+```py
 async receive(buffer_size: int) -> bytes
 ```
 Waits for data from the last destination. `buffer_size` sets the maximal size of the received data.
+
+```py
+async receive_exactly(n: int) -> bytes
+```
+Receive exactly `n` bytes from destination.
+
 
 ### Pool Index
 A pool index is a server who maintains a list of known nodes for a client to
