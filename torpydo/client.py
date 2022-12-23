@@ -74,7 +74,7 @@ class Client():
 
     async def receive(self, buffer_size: int) -> bytes:
         """
-        Awaits for data from the final node.
+        Awaits for data from the final destination.
         
         Arguments:
         buffer_size -- Max bytes to receive.
@@ -83,6 +83,18 @@ class Client():
         Received decrypted data
         """
         return await self._tpdp_handler.receive(buffer_size)
+    
+    async def receive_exactly(self, n: int) -> bytes:
+        """
+        Receives exactly n bytes from final_destination.
+
+        Arguments:
+        n -- bytes to receive.
+
+        Returns:
+        Received decrypted data
+        """
+        return await self._tpdp_handler.receive_exactly(n)
     
 
     async def random_path_to_destination(self, host: str, port: int, n: int) -> None:

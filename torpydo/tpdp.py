@@ -457,9 +457,9 @@ class TPDPClient:
     async def next_handshake(self, destination_hostname: str, destination_port: int) -> None:
         """
         Performs a TPDP/0.1 handshake process:
-            -> Send source peer Hello
-            <- Await node Hello to source peer
-            -- Generate node X25519 private key
+            -> Send source peer Hello to node
+            <- Await node Hello
+            -- Generate source peer X25519 private key
             -> Send source peer X25519 public key
             <- Await node X25519 public key from node
             -- Calculate X25519 shared key and derive a useable key via HKDF
@@ -479,13 +479,13 @@ class TPDPClient:
         # -> Send peer Hello to node
         await self._write_to_node(b"Hello TPDP/0.1\r\n")
 
-        # <- Await source node Hello
+        # <- Await node Hello
         hello_data = await self._receive_from_node(16)
 
         if hello_data != b"Hello TPDP/0.1\r\n":
             raise Exception("Node commited a protocol error during handshake")
 
-        # -- Generate node X25519 private key
+        # -- Generate source peer X25519 private key
         private_key = X25519PrivateKey.generate()
 
         # -> Send peer X25519 public key to node
@@ -500,7 +500,7 @@ class TPDPClient:
         shared_key = private_key.exchange(node_public_key)
         derived_key = HKDF(algorithm=SHA256(), length=32, salt=None, info=b"TPDP/0.1").derive(shared_key)
         
-        # -> Send source node randomly generated nonce for AES256/CTR cipher
+        # -> Send source peer randomly generated nonce for AES256/CTR cipher
         ctr_nonce = token_bytes(16)
         await self._write_to_node(ctr_nonce)
 
@@ -518,7 +518,7 @@ class TPDPClient:
         # -> Send source peer desired destination encrypted hostname length
         await self._write_to_node(len(destination_hostname).to_bytes(2))
 
-        # -> Send source node desired destination encrypted hostname
+        # -> Send source peer desired destination encrypted hostname
         host_encrypted_bytes = encryptor.update(destination_hostname.encode())
         await self._write_to_node(host_encrypted_bytes)
 
@@ -528,7 +528,7 @@ class TPDPClient:
         if ack_data != b"\x06\x06":
             raise Exception("Node commited a protocol error during handshake")
 
-        # -> Send source node desired destination encrypted port
+        # -> Send source peer desired destination encrypted port
         port_encrypted_bytes = encryptor.update(destination_port.to_bytes(2))
         await self._write_to_node(port_encrypted_bytes)
         
@@ -566,6 +566,26 @@ class TPDPClient:
         """
         # <- Read encrypted data from node
         encrypted_data = await self._node_reader.read(buffer_size)
+        
+        # -- Decrypt data
+        data = encrypted_data
+        for i in range(len(self._decryptors)):
+            data = self._decryptors[i].update(data)
+        
+        return data
+    
+    async def receive_exactly(self, n: int) -> bytes:
+        """
+        Receives exactly n bytes from final_destination.
+
+        Arguments:
+        n -- bytes to receive.
+
+        Returns:
+        Received decrypted data
+        """
+        # <- Read encrypted data from node
+        encrypted_data = await self._node_reader.readexactly(n)
         
         # -- Decrypt data
         data = encrypted_data
